@@ -200,5 +200,5 @@ Notes and implementation details:
 
 
 **Sources**
-- ChatGPT for understanding, definition of the problem (variables and constraints), and code writing assistance.
+- ChatGPT for understanding, definition of the problem (variables and constraints), and code writing assistance/refinement.
 - [Dispatching Problem](https://medium.com/@amunagekar/optimizing-power-generation-by-solving-the-dispatching-problem-a600e3706700): Understanding problem Modeling and solver.

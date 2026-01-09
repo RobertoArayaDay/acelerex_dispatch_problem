@@ -1,17 +1,11 @@
 import pulp as pl
 
 
-# ------------------
 # Sets
-# ------------------
-
 T = range(1, 5)
 G = ['diesel', 'gas']
 
-# ------------------
 # Parameters
-# ------------------
-
 D = {
     1: 50,
     2: 60,
@@ -48,32 +42,30 @@ P_solar_hat = {
 }
 
 
-# ----------------------
 # Model
-# ----------------------
 model = pl.LpProblem("MicroGridDispatch", pl.LpMinimize)
 
-# --------------
 # Decision Variables
-# --------------
 P = pl.LpVariable.dicts("P", (G, T), lowBound=0)
 n = pl.LpVariable.dicts("n", (G, T), cat="Binary")
 s = pl.LpVariable.dicts("s", (G, T), cat="Binary")
 P_solar = pl.LpVariable.dicts("P_solar", T, lowBound=0)
 
 
-# ----------------------
 # Objective Function
-# ----------------------
-model += pl.lpSum(
-    c[g] * P[g][t] + C_start[g] * s[g][t]
-    for g in G for t in T
-)
+total_cost = 0
 
-# --------------------------
+for generator in G:
+    for t in T:
+        # Add generation cost
+        total_cost += c[generator] * P[generator][t]
+        # Add startup cost
+        total_cost += C_start[generator] * s[generator][t]
+
+# Set the objective
+model += total_cost, "Total_Operational_Cost"
+
 # Constraints
-# --------------------------
-
 # 1. Power balance
 for t in T:
     model += (
@@ -101,22 +93,25 @@ for g in G:
 
 
 # Solve
-# -----------------------------
 model.solve(pl.PULP_CBC_CMD(msg=False))
 
-# -----------------------------
 # Results
-# -----------------------------
 print("Status:", pl.LpStatus[model.status])
 print("\nDispatch Results:\n")
 
 for t in T:
-    print(f"Time {t}")
+    print(f"Time period: {t}")
+
+    # print each generator
     for g in G:
-        print(
-            f"  {g}: ON={int(n[g][t].value())}, "
-            f"P={P[g][t].value():.1f}, "
-            f"Start={int(s[g][t].value())}"
-        )
-    print(f"  Solar: P={P_solar[t].value():.1f}")
-    print()
+        on_status = int(n[g][t].value())
+        power_output = P[g][t].value()
+        startup_status = int(s[g][t].value())
+
+        print(f"  Generator {g}:")
+        print(f"    ON: {on_status}")
+        print(f"    Power: {power_output:.1f} MW")
+        print(f"    Startup: {startup_status}")
+    
+    # Print solar
+    print(f"  Solar Power: {P_solar[t].value():.1f} MW\n")
