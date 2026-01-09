@@ -17,7 +17,7 @@ Several approaches can be used to solve a dispatch problem, including linear pro
 
 ## 1. Optimization Problem Definition
 
-This document describes a microgrid dispatch problem over a discrete time horizon $ t \in T$. At each step time step, the model determines:
+This document describes a microgrid dispatch problem over a discrete time horizon $t \in T$. At each step time step, the model determines:
  - Which generators should be operating.
  - How much power each operating generator should produce.
 
@@ -83,16 +83,10 @@ where:
 
 ### 1. Power Balance Constraint
 Ensures electricity demand is exactly met at each time step.
-$$
-\sum_{g} P_{g,t} + P_{solar, t} = D_{t} ~~~~~~~\forall t \in T
-$$  
-
+$$\sum_{g \in G} P_{g,t} + P_{\text{solar},t} = D_t, \quad \forall t \in T$$
 ### 2. Generator Availability Constraints (Binary)
 Each dispatchable generator can be ON or OFF.
-$$
-n_{g,t} \in \{0,1\}~~~~~~~\forall g \in G_{disp}, \forall t \in T
-$$
-
+$$n_{g,t} \in \{0,1\}~~~~~~~\forall g \in G_{disp}, \forall t \in T$$
 ### 3. Capacity Constranits (Diesel and Gas)
 Constraints generation commitment to power output.
 $$P_{g}^{min} n_{g,t}\leq P_{g,t} \leq P_{g}^{max} n_{g,t} ~~~~~~\forall g \in G_{disp}, \forall t \in T$$
